@@ -1,0 +1,45 @@
+{
+  "name": "Go Redirect Service",
+  "image": "mcr.microsoft.com/devcontainers/go:1.21-bookworm",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "ms-vscode.makefile-tools",
+        "github.vscode-github-actions"
+      ],
+      "settings": {
+        "go.toolsManagement.checkForUpdates": "local",
+        "go.useLanguageServer": true,
+        "go.gopath": "/go",
+        "go.goroot": "/usr/local/go",
+        "go.lintOnSave": "package",
+        "go.vetOnSave": "package",
+        "go.formatTool": "goimports",
+        "go.lintTool": "golint",
+        "go.testFlags": ["-v"],
+        "go.testTimeout": "10s"
+      }
+    }
+  },
+
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Redirect Service",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postCreateCommand": "go mod download && go mod tidy",
+
+  "remoteUser": "vscode"
+}
