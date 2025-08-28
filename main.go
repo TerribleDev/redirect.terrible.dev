@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -56,8 +58,14 @@ func main() {
 	// Use a single handler function to minimize memory overhead
 	app.All("*", redirectHandler)
 
-	// Start server on port 8080
-	if err := app.Listen(":8080"); err != nil {
+	// Get port from environment variable (Heroku sets this)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default port for local development
+	}
+
+	// Start server on the specified port
+	if err := app.Listen(":" + port); err != nil {
 		panic(err)
 	}
 }
