@@ -10,7 +10,7 @@ import (
 var (
 	// Host-based redirects
 	hostRedirects = map[string]string{
-		"mail.terrible.dev": "https://mail.tommyparnell.com",
+		"mail.terrible.dev": "https://mail.tommyparnell.com/mail",
 	}
 
 	// Path-based redirects
