@@ -12,6 +12,7 @@ var (
 	hostRedirects = map[string]string{
 		"mail.terrible.dev":     "https://mail.tommyparnell.com/mail",
 		"calendar.terrible.dev": "https://mail.tommyparnell.com/cloud/calendar",
+		"cal.terrible.dev":      "https://cal.com/terribledev",
 	}
 
 	// Path-based redirects
