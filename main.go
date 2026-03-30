@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,6 +23,47 @@ var (
 		"/test": "https://blog.terrible.dev",
 	}
 )
+
+var listHosts = map[string]bool{
+	"aka.terrible.dev":      true,
+	"redirect.terrible.dev": true,
+}
+
+func listRoutesHandler(c *fiber.Ctx) error {
+	host := c.Get("X-Forwarded-Host")
+	if host == "" {
+		host = c.Hostname()
+	}
+	if !listHosts[host] {
+		return redirectHandler(c)
+	}
+
+	var sb strings.Builder
+	sb.WriteString("Redirect Routes\n\n")
+
+	sb.WriteString("Host-based redirects:\n")
+	hosts := make([]string, 0, len(hostRedirects))
+	for h := range hostRedirects {
+		hosts = append(hosts, h)
+	}
+	sort.Strings(hosts)
+	for _, h := range hosts {
+		sb.WriteString(fmt.Sprintf("  %s -> %s\n", h, hostRedirects[h]))
+	}
+
+	sb.WriteString("\nPath-based redirects:\n")
+	paths := make([]string, 0, len(pathRedirects))
+	for p := range pathRedirects {
+		paths = append(paths, p)
+	}
+	sort.Strings(paths)
+	for _, p := range paths {
+		sb.WriteString(fmt.Sprintf("  %s -> %s\n", p, pathRedirects[p]))
+	}
+
+	c.Set("Content-Type", "text/plain")
+	return c.SendString(sb.String())
+}
 
 func redirectHandler(c *fiber.Ctx) error {
 	// Get the actual host, checking X-Forwarded-Host first
@@ -56,6 +100,9 @@ func main() {
 		ServerHeader:     "",
 		AppName:          "redirect",
 	})
+
+	// List all routes on /
+	app.Get("/", listRoutesHandler)
 
 	// Use a single handler function to minimize memory overhead
 	app.All("*", redirectHandler)
